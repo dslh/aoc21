@@ -25,12 +25,12 @@ for i in WIDTH:
 print("Part 1:")
 print(gamma * epsilon)
 
-def find_oxygen_rating(numbers):
+def find_rating(numbers, take_majority=True):
     for i in reversed(WIDTH):
         count = count_position(numbers, i)
         threshold = len(numbers) / 2
 
-        if count >= threshold:
+        if (count >= threshold) == take_majority:
             numbers = [n for n in numbers if n & (1 << i)]
         else:
             numbers = [n for n in numbers if ~n & (1 << i)]
@@ -38,22 +38,8 @@ def find_oxygen_rating(numbers):
         if len(numbers) == 1:
             return numbers[0]
 
-oxygen_rating = find_oxygen_rating(numbers)
-
-def find_scrubber_rating(numbers):
-    for i in reversed(WIDTH):
-        count = count_position(numbers, i)
-        threshold = len(numbers) / 2
-
-        if count >= threshold:
-            numbers = [n for n in numbers if ~n & (1 << i)]
-        else:
-            numbers = [n for n in numbers if n & (1 << i)]
-
-        if len(numbers) == 1:
-            return numbers[0]
-
-scrubber_rating = find_scrubber_rating(numbers)
+oxygen_rating = find_rating(numbers)
+scrubber_rating = find_rating(numbers, take_majority=False)
 
 print("Part 2:")
 print(oxygen_rating * scrubber_rating)
