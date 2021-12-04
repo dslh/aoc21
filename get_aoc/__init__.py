@@ -22,6 +22,10 @@ def get_input(day):
 def get_input_lines(day):
     return get_input(day).rsplit('\n')
 
+# Use this to break the input into chunks, separated by blank lines
+def get_input_chunks(day):
+    return get_input(day).rsplit('\n\n')
+
 # Use this to read each line of input as an integer number
 def get_input_integers(day):
     return [int(line) for line in get_input_lines(day)]
