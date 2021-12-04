@@ -52,13 +52,19 @@ class BingoCard:
 
         self.marked[position] = True
 
+        if self.bingo:
+            return
+
         row, col = self._get_coords(position)
-        self.bingo = self.bingo or self._is_row_bingo(row) or self._is_col_bingo(col)
+        self.bingo = self._is_row_bingo(row) or self._is_col_bingo(col)
+        if self.bingo:
+            self.winning_number = number
 
     def unmarked(self):
         return [self.numbers[i] for i in range(len(self.numbers)) if not self.marked[i]]
 
 cards = [BingoCard(card) for card in raw[1:]]
+
 contains_number = {i:[] for i in draw}
 for card in cards:
     for number in card.numbers:
@@ -69,9 +75,32 @@ def perform_draw(draw, cards_containing):
         for card in cards_containing[number]:
             card.mark(number)
             if card.bingo:
-                return (card, number)
+                return card
 
-winner, number = perform_draw(draw, contains_number)
+winner = perform_draw(draw, contains_number)
 
 print("Part 1:")
-print(sum(winner.unmarked()) * number)
+print(sum(winner.unmarked()) * winner.winning_number)
+
+for card in cards:
+    card.reset()
+
+def find_loser(draw, cards):
+    winner_count = 0
+    card_count = len(cards)
+    for number in draw:
+        for card in cards:
+            card.mark(number)
+
+            if card.bingo:
+                winner_count += 1
+                if winner_count == card_count:
+                    return card
+
+        cards = [card for card in cards if not card.bingo]
+
+    return winner_count
+
+loser = find_loser(draw, cards)
+print("Part 2:")
+print(sum(loser.unmarked()) * loser.winning_number)
