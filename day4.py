@@ -36,7 +36,8 @@ class BingoCard:
         row_start = position - col
 
         # All numbers in the row are marked, or all numbers in the column
-        self.bingo = all(mark for mark in self.marked[row_start:row_start+SIZE]) or all(mark for mark in self.marked[col::SIZE])
+        self.bingo = (all(mark for mark in self.marked[row_start:row_start+SIZE])
+                        or all(mark for mark in self.marked[col::SIZE]))
         if self.bingo:
             self.winning_number = number
 
