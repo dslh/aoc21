@@ -24,16 +24,10 @@ class BingoCard:
         # Flag denoting if the card has achieved bingo
         self.bingo = False
 
+    # Clear the marks on the card, in order to play a new game
     def reset(self):
         # A list of booleans corresponding to numbers, marking the positions that have been drawn
         self.marked = [False] * len(self.numbers)
-
-
-    # Reproduce the original text used to generate the card.
-    # Makes `print(card)` give a nice output
-    def __str__(self):
-        rows = [self.numbers[i:i+SIZE] for i in range(0, len(self.numbers), SIZE)]
-        return '\n'.join(' '.join(str(n).rjust(2, ' ') for n in row) for row in rows)
 
     # Mark off a number on the card as it is drawn
     def mark(self, number):
@@ -44,10 +38,6 @@ class BingoCard:
         self.marked[position] = True
 
         # Check for bingo when a number is marked, that way there is only one row and column to check
-        self._check_bingo(position)
-
-    # Check if we have attained bingo, and store the winning number for score calculation
-    def _check_bingo(position):
         # Once is enough
         if self.bingo:
             return
@@ -56,8 +46,7 @@ class BingoCard:
         row_start = position - col
 
         # All numbers in the row are marked, or all numbers in the column
-        self.bingo = all(mark for mark in self.marked[row_start:row_start+SIZE])
-                    or all(mark for mark in self.marked[col::SIZE])
+        self.bingo = all(mark for mark in self.marked[row_start:row_start+SIZE]) or all(mark for mark in self.marked[col::SIZE])
         if self.bingo:
             self.winning_number = number
 
@@ -69,22 +58,9 @@ class BingoCard:
 # Read cards from the input
 cards = [BingoCard(card) for card in raw[1:]]
 
-def find_winner(draw, cards):
-    for number in draw:
-        for card in cards:
-            card.mark(number)
-            if card.bingo:
-                return card
-
-winner = find_winner(draw, cards)
-
-print("Part 1:")
-print(winner.score())
-
-for card in cards:
-    card.reset()
-
-def find_loser(draw, cards):
+# Play bingo. Returns the winner and the loser, solving both parts at once
+def play(draw, cards):
+    winner = None
     winner_count = 0
     card_count = len(cards)
     for number in draw:
@@ -92,15 +68,21 @@ def find_loser(draw, cards):
             card.mark(number)
 
             if card.bingo:
+                if winner_count == 0:
+                    winner = card
+
                 winner_count += 1
                 if winner_count == card_count:
-                    return card
+                    return (winner, card)
 
         cards = [card for card in cards if not card.bingo]
 
     return winner_count
 
-loser = find_loser(draw, cards)
+winner, loser = play(draw, cards)
+
+print("Part 1:")
+print(winner.score())
 
 print("Part 2:")
 print(loser.score())
