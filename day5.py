@@ -2,14 +2,12 @@
 
 from get_aoc import get_input_lines
 
-# Allows me to refer to a coordinate pair as coord.x and coord.y
+# Allows me to refer to a coordinate pair as coord.x and coord.y,
+# instead of coord[0] and coord[1]
 class Coord:
     def __init__(self, x, y):
         self.x = int(x)
         self.y = int(y)
-
-    def __str__(self):
-        return f"{self.x},{self.y}"
 
     # Converts a coord into a single, semi-random number.
     # Required to use a coord as a dictionary key
@@ -34,9 +32,6 @@ class Line:
     # Takes a line of input and creates a new Line object
     def __init__(self, line):
         self.a, self.b = [Coord(*n.split(',')) for n in line.split(' -> ')]
-
-    def __str__(self):
-        return f"{self.a} -> {self.b}"
 
     def vertical(self):
         return self.a.x == self.b.x
@@ -78,11 +73,11 @@ def height_map(lines):
 
     return sea_floor
 
-print("Part 1:")
+def count_intersections(lines):
+    return sum(height > 1 for height in height_map(lines).values())
 
-straight_lines = [line for line in lines if line.straight()]
-print(sum(height > 1 for height in height_map(straight_lines).values()))
+print("Part 1:")
+print(count_intersections([line for line in lines if line.straight()]))
 
 print("Part 2:")
-
-print(sum(height > 1 for height in height_map(lines).values()))
+print(count_intersections(lines))
