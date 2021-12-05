@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
 
-from get_aoc import get_input_chunks
-
-raw = get_input_chunks(4)
-
-# The numbers to be drawn from the barrel
-draw = [int(n) for n in raw[0].split(',')]
-
-# The dimensions of a bingo card
-SIZE = 5
-
 # A class representing a bingo card. Stores the numbers on the card, keeps track of which
 # ones have been marked, and detects bingo.
 class BingoCard:
@@ -54,6 +44,16 @@ class BingoCard:
     # multiplied by the last drawn number that created a bingo
     def score(self):
         return sum(n for (n,i) in self.numbers.items() if not self.marked[i]) * self.winning_number
+
+from get_aoc import get_input_chunks
+
+raw = get_input_chunks(4)
+
+# The numbers to be drawn from the barrel
+draw = [int(n) for n in raw[0].split(',')]
+
+# The dimensions of a bingo card
+SIZE = 5
 
 # Read cards from the input
 cards = [BingoCard(card) for card in raw[1:]]
