@@ -53,15 +53,13 @@ class Line:
             for y in urange(self.a.y, self.b.y):
                 yield Coord(self.a.x, y)
 
-        else: # Guaranteed diagonal
+        else:
+            # Guaranteed diagonal, so we can step each iterator in tandem.
+            # Otherwise this would be harder.
             xr = iter(urange(self.a.x, self.b.x))
             yr = iter(urange(self.a.y, self.b.y))
-
-            try:
-                while True:
-                    yield Coord(next(xr), next(yr))
-            except StopIteration:
-                return
+            for x, y in zip(xr, yr):
+                yield Coord(x, y)
 
 lines = [Line(line) for line in get_input_lines(5)]
 
