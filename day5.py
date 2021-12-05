@@ -26,7 +26,8 @@ class Coord:
 # - start and end can be given in either order
 # - end is included in the range
 def urange(start, end):
-    return range(min(start, end), max(start, end) + 1)
+    direction = 1 if end > start else -1
+    return range(start, end + direction, direction)
 
 # A line of vents, as described in the input
 class Line:
@@ -57,13 +58,31 @@ class Line:
             for y in urange(self.a.y, self.b.y):
                 yield Coord(self.a.x, y)
 
-lines = [Line(line) for line in get_input_lines(5)]
-straight_lines = [line for line in lines if line.straight()]
+        else: # Guaranteed diagonal
+            xr = iter(urange(self.a.x, self.b.x))
+            yr = iter(urange(self.a.y, self.b.y))
 
-sea_floor = dict()
-for line in straight_lines:
-    for coord in line.coords():
-        sea_floor[coord] = sea_floor.get(coord, 0) + 1
+            try:
+                while True:
+                    yield Coord(next(xr), next(yr))
+            except StopIteration:
+                return
+
+lines = [Line(line) for line in get_input_lines(5)]
+
+def height_map(lines):
+    sea_floor = dict()
+    for line in lines:
+        for coord in line.coords():
+            sea_floor[coord] = sea_floor.get(coord, 0) + 1
+
+    return sea_floor
 
 print("Part 1:")
-print(sum(height > 1 for height in sea_floor.values()))
+
+straight_lines = [line for line in lines if line.straight()]
+print(sum(height > 1 for height in height_map(straight_lines).values()))
+
+print("Part 2:")
+
+print(sum(height > 1 for height in height_map(lines).values()))
