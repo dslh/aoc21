@@ -12,19 +12,18 @@ adults = [population.count(i) for i in range(7)]
 # the adult population. We store them in a separate list
 juveniles = [0] * 7
 
-def breed(adults, juveniles, weekday):
+def breed(adults, juveniles, day):
+    weekday = day % 7
     juveniles[(weekday + 2) % 7] = adults[weekday]
     adults[weekday] += juveniles[weekday]
     juveniles[weekday] = 0
 
 for day in range(80):
-    weekday = day % 7
-    breed(adults, juveniles, weekday)
+    breed(adults, juveniles, day)
 
 print(sum(adults) + sum(juveniles))
 
 for day in range(80, 256):
-    weekday = day % 7
-    breed(adults, juveniles, weekday)
+    breed(adults, juveniles, day)
 
 print(sum(adults) + sum(juveniles))
