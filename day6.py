@@ -22,3 +22,9 @@ for day in range(80):
     breed(adults, juveniles, weekday)
 
 print(sum(adults) + sum(juveniles))
+
+for day in range(80, 256):
+    weekday = day % 7
+    breed(adults, juveniles, weekday)
+
+print(sum(adults) + sum(juveniles))
