@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from get_aoc import get_input
+from get_aoc import get_input_integers
 
-population = [int(age) for age in get_input(6).split(',')]
+population = [int(age) for age in get_input_integers(6, ',')]
 
 # For efficiency, store the population as a list of the count
 # of fish with a certain starting age.
