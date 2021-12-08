@@ -5,33 +5,35 @@ from functools import reduce
 
 UNIQUE_LENGTHS = {2, 3, 4, 7}
 
-def normalize(strings):
-    return [set(string) for string in strings]
+def normalize(string):
+    return [set(term) for term in string.split()]
 
 class Display:
     def __init__(self, notes):
         patterns, output = notes.split(' | ')
-        self.patterns = normalize(patterns.split())
-        self.output = normalize(output.split())
+        self.patterns = normalize(patterns)
+        self.output = normalize(output)
 
-        one   = self.find(lambda p: len(p) == 2)
-        seven = self.find(lambda p: len(p) == 3)
-        four  = self.find(lambda p: len(p) == 4)
-        eight = self.find(lambda p: len(p) == 7)
+        one   = self.find(2)
+        seven = self.find(3)
+        four  = self.find(4)
+        eight = self.find(7)
 
-        three = self.find(lambda p: len(p) == 5 and seven.issubset(p))
-        zero  = self.find(lambda p: p != seven and seven.issubset(p) and not three.issubset(p))
-        nine  = self.find(lambda p: len(p) == 6 and three.issubset(p))
-        six   = self.find(lambda p: len(p) == 6 and p != zero and p != nine)
+        three = self.find(5, seven)
+        zero  = self.find(6, seven, eight - three)
+        nine  = self.find(6, three)
+        six   = self.find(6)
 
-        five  = self.find(lambda p: len(p) == 5 and p.issubset(six))
-        two   = self.find(lambda p: len(p) == 5 and p != three and p != five)
+        five  = self.find(5, four - one)
+        two   = self.find(5)
 
         self.digits = [zero, one, two, three, four, five, six, seven, eight, nine]
 
-
-    def find(self, predicate):
-        return next(pattern for pattern in self.patterns if predicate(pattern))
+    def find(self, length, *subsets):
+        match = next(p for p in self.patterns if len(p) == length and
+                                                 all(s.issubset(p) for s in subsets))
+        self.patterns.remove(match)
+        return match
 
     def part_one(self):
         return sum(len(digit) in UNIQUE_LENGTHS for digit in self.output)
