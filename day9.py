@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from get_aoc import get_input_lines
+from math import prod
 
 grid = [[int(i) for i in line] for line in get_input_lines(9)]
 HEIGHT = len(grid)
@@ -26,3 +27,17 @@ minima = [(i, j) for i in range(HEIGHT)
 
 print("Part 1:")
 print(sum(get_values(grid, minima)) + len(minima))
+
+def smoke_out(grid, i, j, visited=set()):
+    if (i, j) in visited or grid[i][j] == 9:
+        return 0
+
+    visited.add((i, j))
+
+    return 1 + sum(smoke_out(grid, i, j, visited) for i, j in get_neighbours(i, j))
+
+basin_sizes = [smoke_out(grid, i, j) for i, j in minima]
+basin_sizes.sort(reverse=True)
+
+print("Part 2:")
+print(prod(basin_sizes[:3]))
