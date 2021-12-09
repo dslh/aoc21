@@ -41,3 +41,21 @@ basin_sizes.sort(reverse=True)
 
 print("Part 2:")
 print(prod(basin_sizes[:3]))
+
+def smoke_up(grid, i, j):
+    visited = set()
+    to_visit = [(i, j)]
+    while to_visit:
+        i, j = to_visit.pop()
+        visited.add((i, j))
+        to_visit.extend((i, j) for i, j in get_neighbours(i, j)
+                               if (i, j) not in visited
+                               and grid[i][j] != 9)
+
+    return len(visited)
+
+basin_sizes = [smoke_up(grid, i, j) for i, j in minima]
+basin_sizes.sort(reverse=True)
+
+print("Part 2:")
+print(prod(basin_sizes[:3]))
