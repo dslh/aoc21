@@ -35,3 +35,25 @@ lines = get_input_lines(10)
 
 print('Part 1:')
 print(sum(error_score(line) for line in lines))
+
+COMPILER_SCORES = {
+    '(': 1,
+    '[': 2,
+    '{': 3,
+    '<': 4
+}
+
+def compiler_score(line):
+    parens = []
+    for c in line:
+        if c in PARENS:
+            parens.append(c)
+        else:
+            parens.pop()
+
+    return reduce(lambda score, paren: score * 5 + COMPILER_SCORES[paren], parens[::-1], 0)
+
+compiler_scores = [compiler_score(line) for line in lines if error_score(line) == 0]
+
+print('Part 2:')
+print(median(compiler_scores))
