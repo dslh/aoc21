@@ -65,3 +65,8 @@ def test_all_paths(sample_one, sample_two, sample_three):
     assert len(Caves(sample_one).all_paths()) == 10
     assert len(Caves(sample_two).all_paths()) == 19
     assert len(Caves(sample_three).all_paths()) == 226
+
+def test_all_paths_with_revisit(sample_one, sample_two, sample_three):
+    assert len(Caves(sample_one).all_paths(True)) == 36
+    assert len(Caves(sample_two).all_paths(True)) == 103
+    assert len(Caves(sample_three).all_paths(True)) == 3509
