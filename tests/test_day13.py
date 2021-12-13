@@ -3,6 +3,8 @@ import pytest
 import context
 from day13 import Sheet, parse_fold
 
+from inspect import cleandoc
+
 @pytest.fixture
 def sample_dots():
     return [
@@ -54,3 +56,46 @@ def test_part_one(sample_dots):
 def test_parse_fold():
     assert parse_fold('fold along y=7') == ('y', 7)
     assert parse_fold('fold along x=5') == ('x', 5)
+
+def test_sheet_str(sample_dots):
+    sheet = Sheet(sample_dots)
+
+    initial = """\
+        ...#..#..#.
+        ....#......
+        ...........
+        #..........
+        ...#....#.#
+        ...........
+        ...........
+        ...........
+        ...........
+        ...........
+        .#....#.##.
+        ....#......
+        ......#...#
+        #..........
+        #.#........
+    """
+
+    assert str(sheet) == cleandoc(initial)
+
+    first = """\
+        #.##..#..#.
+        #...#......
+        ......#...#
+        #...#......
+        .#.#..#.###
+    """
+    sheet.fold('y', 7)
+    assert str(sheet) == cleandoc(first)
+
+    second = """\
+        #####
+        #...#
+        #...#
+        #...#
+        #####
+    """
+    sheet.fold('x', 5)
+    assert str(sheet) == cleandoc(second)

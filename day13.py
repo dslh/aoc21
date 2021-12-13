@@ -26,6 +26,18 @@ class Sheet:
 
         self.dots = {folder(*dot) for dot in self.dots}
 
+    def __str__(self):
+        WIDTH = max(x for x,_ in self.dots) + 1
+        HEIGHT = max(y for _,y in self.dots) + 1
+        return "\n".join(
+            "".join(
+                self._chr(x, y) for x in range(WIDTH)
+            ) for y in range(HEIGHT)
+        )
+
+    def _chr(self, x, y):
+        return '#' if (x, y) in self.dots else '.'
+
 if __name__ == '__main__':
     from get_aoc import get_input_chunks
 
@@ -36,3 +48,9 @@ if __name__ == '__main__':
     sheet.fold(*folds[0])
     print("Part 1")
     print(len(sheet.dots))
+
+    for fold in folds[1:]:
+        sheet.fold(*fold)
+
+    print("Part 2")
+    print(sheet)
