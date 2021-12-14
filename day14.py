@@ -36,3 +36,7 @@ if __name__ == '__main__':
 
     print('Part 1:')
     print(polymer_rating(polymer))
+
+    polymer = polymizer.expand_n(base, 40)
+    print('Part 2:')
+    print(polymer_rating(polymer))
