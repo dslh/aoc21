@@ -16,16 +16,31 @@ class Polymizer:
         return ''.join(self.rules[pair] for pair in pairwise(polymer)) + polymer[-1]
 
     def expand_n(self, polymer, steps):
+        analyse(polymer)
         for _ in range(steps):
             polymer = self.expand(polymer)
+            analyse(polymer)
 
         return polymer
+
+    def analysis(self, polymer, steps):
+        analysis = []
+        for _ in range(steps):
+            polymer = self.expand(polymer)
+            analysis.append({char:polymer.count(char) for char in sorted(set(polymer))})
+
+        return analysis
 
 def polymer_rating(polymer):
     chars = set(polymer)
     counts = [polymer.count(char) for char in chars]
 
     return max(counts) - min(counts)
+
+def analyse(polymer):
+    for char in sorted(set(polymer)):
+        print(f"{char}:{polymer.count(char)}", end="\t")
+    print()
 
 if __name__ == '__main__':
     from get_aoc import get_input_chunks
