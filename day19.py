@@ -94,6 +94,9 @@ class Field:
 
         raise RuntimeError
 
+    def manhattan(self, other):
+        return sum(abs(self.centre[i] - other.centre[i]) for i in range(3))
+
 def overlay_all(fields):
     overlaid = [fields[0]]
     fields = fields[1:]
@@ -111,3 +114,6 @@ if __name__ == '__main__':
     overlay_all(fields)
     coords = set(coord for field in fields for coord in field.coords)
     print(len(coords))
+
+    print('Part 2:')
+    print(max(a.manhattan(b) for a,b in combinations(fields, 2)))
