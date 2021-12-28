@@ -56,6 +56,15 @@ class Seeker:
         cost, _ = self.visited[end[0]][end[1]]
         return cost, self.path(end)
 
+def expand(grid, scale=5):
+    def inc(value, amount):
+        return (value + amount - 1) % 9 + 1
+
+    return [
+        [inc(n, i + j) for i in range(scale) for n in line]
+        for j in range(scale) for line in grid
+    ]
+
 if __name__ == '__main__':
     from get_aoc import get_input_lines
     grid = [[int(c) for c in line] for line in get_input_lines(15)]
@@ -65,4 +74,10 @@ if __name__ == '__main__':
     cost, path = seeker.seek((0,0), end)
 
     print("Part 1:")
+    print(cost)
+
+    print("Part 2:")
+    seeker = Seeker(expand(grid))
+    end = (seeker.height - 1, seeker.width - 1)
+    cost, path = seeker.seek((0,0), end)
     print(cost)
