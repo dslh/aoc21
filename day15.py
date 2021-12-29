@@ -8,6 +8,9 @@ import time
 
 ADJACENCY = [(0,1),(1,0),(-1,0),(0,-1)]
 
+def manhattan(a, b):
+    return (abs(a[0] - b[0]) + abs(a[1] - b[1])) * 2
+
 class Seeker:
     def __init__(self, grid, animate=False):
         self.grid = grid
@@ -44,17 +47,19 @@ class Seeker:
         self.visits = PriorityQueue()
 
         for pos in self.neighbours(start):
-            self.visits.put((self.cost(pos), pos, start))
+            self.visits.put((self.cost(pos) + manhattan(pos, end), self.cost(pos), pos, start))
 
         self.visit(0, start, None)
 
         while not self.visits.empty():
-            cost, pos, prev = self.visits.get()
+            _, cost, pos, prev = self.visits.get()
             visited = self.visited[pos[0]][pos[1]]
             if visited and visited[0] <= cost:
                 continue
 
             self.visit(cost, pos, prev)
+            if pos == end:
+                break
 
             if self.animate:
                 os.system('clear')
@@ -64,7 +69,8 @@ class Seeker:
             for neigh in self.neighbours(pos):
                 visited = self.visited[neigh[0]][neigh[1]]
                 if not visited or visited[0] > cost + self.cost(neigh):
-                    self.visits.put((cost + self.cost(neigh), neigh, pos))
+                    new_cost = cost + self.cost(neigh)
+                    self.visits.put((new_cost + manhattan(neigh, end), new_cost, neigh, pos))
 
         cost, _ = self.visited[end[0]][end[1]]
 
@@ -86,7 +92,7 @@ if __name__ == '__main__':
     from get_aoc import get_input_lines
     grid = [[int(c) for c in line] for line in get_input_lines(15)]
 
-    seeker = Seeker(grid)
+    seeker = Seeker(grid, True)
     end = (seeker.height - 1, seeker.width - 1)
     cost, path = seeker.seek((0,0), end)
 
@@ -94,7 +100,7 @@ if __name__ == '__main__':
     print(cost)
 
     print("Part 2:")
-    seeker = Seeker(expand(grid), True)
+    seeker = Seeker(expand(grid))
     end = (seeker.height - 1, seeker.width - 1)
     cost, path = seeker.seek((0,0), end)
     print(cost)
