@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from queue import PriorityQueue
+from queue import PriorityQueue, LifoQueue, Queue
 
 import box_chars
 import os
@@ -50,7 +50,8 @@ class Seeker:
 
         while not self.visits.empty():
             cost, pos, prev = self.visits.get()
-            if self.visited[pos[0]][pos[1]]:
+            visited = self.visited[pos[0]][pos[1]]
+            if visited and visited[0] <= cost:
                 continue
 
             self.visit(cost, pos, prev)
@@ -61,7 +62,8 @@ class Seeker:
                 time.sleep(0.05)
 
             for neigh in self.neighbours(pos):
-                if not self.visited[neigh[0]][neigh[1]]:
+                visited = self.visited[neigh[0]][neigh[1]]
+                if not visited or visited[0] > cost + self.cost(neigh):
                     self.visits.put((cost + self.cost(neigh), neigh, pos))
 
         cost, _ = self.visited[end[0]][end[1]]
