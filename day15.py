@@ -2,13 +2,18 @@
 
 from queue import PriorityQueue
 
+import box_chars
+import os
+import time
+
 ADJACENCY = [(0,1),(1,0),(-1,0),(0,-1)]
 
 class Seeker:
-    def __init__(self, grid):
+    def __init__(self, grid, animate=False):
         self.grid = grid
         self.width = len(grid[0])
         self.height = len(grid)
+        self.animate = animate
 
     def cost(self, pos):
         i, j = pos
@@ -49,11 +54,21 @@ class Seeker:
                 continue
 
             self.visit(cost, pos, prev)
+
+            if self.animate:
+                os.system('clear')
+                box_chars.show(self, pos, start, end)
+                time.sleep(0.05)
+
             for neigh in self.neighbours(pos):
                 if not self.visited[neigh[0]][neigh[1]]:
                     self.visits.put((cost + self.cost(neigh), neigh, pos))
 
         cost, _ = self.visited[end[0]][end[1]]
+
+        if self.animate:
+            os.system('clear')
+        box_chars.show(self, end, start, end)
         return cost, self.path(end)
 
 def expand(grid, scale=5):
@@ -77,7 +92,7 @@ if __name__ == '__main__':
     print(cost)
 
     print("Part 2:")
-    seeker = Seeker(expand(grid))
+    seeker = Seeker(expand(grid), True)
     end = (seeker.height - 1, seeker.width - 1)
     cost, path = seeker.seek((0,0), end)
     print(cost)
