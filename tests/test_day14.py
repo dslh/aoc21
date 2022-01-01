@@ -2,7 +2,7 @@ import pytest
 
 import context
 
-from day14 import Polymizer, pairwise, polymer_rating
+from day14 import Polymizer, PolymerCounter, pairwise, polymer_rating, pair_counts, pairwise_rating
 
 @pytest.fixture
 def sample_rules():
@@ -71,3 +71,32 @@ def test_polymer_rating(sample_rules):
     polymizer = Polymizer(sample_rules)
     expanded = polymizer.expand_n('NNCB', 10)
     assert polymer_rating(expanded) == 1588
+
+@pytest.fixture
+def sample_pair_counts():
+    return {
+        'NB': 2, 'BC': 2, 'CC': 1, 'CN': 1, 'BB': 2, 'CB': 2, 'BH': 1, 'HC': 1
+    }
+
+def test_pair_counts(sample_pair_counts):
+    polymer = 'NBCCNBBBCBHCB'
+    assert pair_counts(polymer) == sample_pair_counts
+
+def test_polymer_counter(sample_rules, sample_pair_counts):
+    polymer = 'NNCB'
+    counter = PolymerCounter(sample_rules, polymer)
+    counter.expand_n(10)
+
+    counts = counter.counts()
+    assert counts['B'] == 1749
+    assert counts['C'] == 298
+    assert counts['H'] == 161
+    assert counts['N'] == 865
+
+    assert counter.rating() == 1588
+
+    counter.expand_n(30)
+    counts = counter.counts()
+    assert counts['B'] == 2192039569602
+    assert counts['H'] == 3849876073
+    assert counter.rating() == 2188189693529
