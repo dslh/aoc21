@@ -147,6 +147,12 @@ def test_burrow_parse(sample_input, extended_sample_input):
         assert room.size == 4
         assert room.emptying
 
+    burrow = Burrow.parse(sample_input, True)
+    assert list(burrow.rooms[0].items()) == [1,3,3,0]
+    assert list(burrow.rooms[1].items()) == [2,2,1,3]
+    assert list(burrow.rooms[2].items()) == [1,1,0,2]
+    assert list(burrow.rooms[3].items()) == [3,0,2,0]
+
 def test_burrow_moves(sample_input):
     burrow = Burrow.parse(sample_input)
     assert len(list(burrow.moves())) == 4 * 7
@@ -199,3 +205,8 @@ def test_search(sample_input, extended_sample_input):
     burrow = search(burrow)
     assert burrow.done
     assert burrow.cost == 12521
+
+    burrow = Burrow.parse(extended_sample_input)
+    burrow = search(burrow)
+    assert burrow.done
+    assert burrow.cost == 44169

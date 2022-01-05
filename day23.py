@@ -161,14 +161,26 @@ class Burrow:
         self.done = all(room.filled for room in rooms)
 
     @classmethod
-    def parse(cls, input):
-        rows = [re.findall(r'[A-D]', line) for line in input.split('\n')[2:-1]]
-        rooms = [Room.new(i, col) for i, col in enumerate(zip(*rows))]
+    def parse(cls, input, part_twoify=False):
+        cols = list(zip(*(
+            re.findall(r'[A-D]', line) for line in input.split('\n')[2:-1]
+        )))
+
+        if part_twoify:
+            cols[0] = [cols[0][0], 'D', 'D', cols[0][1]]
+            cols[1] = [cols[1][0], 'C', 'B', cols[1][1]]
+            cols[2] = [cols[2][0], 'B', 'A', cols[2][1]]
+            cols[3] = [cols[3][0], 'A', 'C', cols[3][1]]
+
+        rooms = [Room.new(i, col) for i, col in enumerate(cols)]
+
         return cls(rooms)
 
+    # Order burrows by their cost. Needed for PriorityQueue.
     def __lt__(self, other):
         return self.cost < other.cost
 
+    # All of the valid moves that can be made from this position.
     def moves(self):
         for i, room in enumerate(self.rooms):
             if not room.emptying:
@@ -242,4 +254,8 @@ if __name__ == '__main__':
 
     burrow = Burrow.parse(get_input(23))
     print("Part 1:")
+    print(search(burrow).cost)
+
+    burrow = Burrow.parse(get_input(23), True)
+    print("Part 2:")
     print(search(burrow).cost)
