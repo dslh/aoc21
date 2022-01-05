@@ -31,6 +31,8 @@ class Room:
         # True when all the crabs that live here are home
         self.filled = self.filling and amount == size
 
+        self.estimate = self.calculate_estimate()
+
     # Position of a room, for calculating distances and costs
     @staticmethod
     def pos(category):
@@ -44,6 +46,31 @@ class Room:
             contents = (contents << 2) | (ord(item) - ord('A'))
 
         return cls(category, len(items), contents, len(items))
+
+    # The total remaining expected cost of sending unwanted crabs
+    # home, and cramming in the crabs that are supposed to be here.
+    def calculate_estimate(self):
+        if self.filled:
+            return 0
+
+        if self.filling:
+            return (self.size - self.amount) * 10 ** self.category
+
+        # Count the crabs that will not need to move.
+        prefilled = next(i for i, item in enumerate(reversed(list(self.items())))
+                         if item != self.category)
+
+        return (
+            # Cost of emptying
+            sum((i + self.size - self.amount + 1 + abs(Room.pos(item) - Room.pos(self.category))) * 10 ** item
+                for i, item in enumerate(self.items()))
+
+            # Cost of filling
+            + (self.size ** 2 + self.size) // 2 * 10 ** self.category
+
+            # Less the costs of emptying and filling any prefilled crabs
+            - sum(range(self.size - prefilled, self.size)) * 10 ** self.category * 2
+        )
 
     # Enumerates the crabs in the room, starting with the crab closest to the door.
     def items(self):
@@ -74,6 +101,8 @@ class Hallway:
         self.contents = contents
         # Bit flags denoting which positions have a crab in them.
         self.filled = filled
+        # Cost of getting each crab in the hall to the door of the appropriate room.
+        self.estimate = self.calculate_estimate()
 
     # Position of a hall slot, for calculating distances and costs.
     @staticmethod
@@ -99,6 +128,9 @@ class Hallway:
             item = self[i]
             if item != None:
                 yield (i, item)
+
+    def calculate_estimate(self):
+        return sum(abs(Hallway.pos(i) - Room.pos(item)) * 10 ** item for i, item in self.items())
 
     # Put a crab at position i.
     def put(self, i, item):
@@ -158,6 +190,8 @@ class Burrow:
         self.cost = cost
         self.prev = prev
 
+        self.estimate = self.cost + sum(room.estimate for room in rooms) + hall.estimate
+
         self.done = all(room.filled for room in rooms)
 
     @classmethod
@@ -178,7 +212,7 @@ class Burrow:
 
     # Order burrows by their cost. Needed for PriorityQueue.
     def __lt__(self, other):
-        return self.cost < other.cost
+        return self.estimate < other.estimate
 
     # All of the valid moves that can be made from this position.
     def moves(self):
