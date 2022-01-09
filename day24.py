@@ -55,12 +55,42 @@ def down_counter(digits, value=[]):
             val = value + [i]
             yield from down_counter(digits - 1, val)
 
-def program(seq):
-    seq = iter(seq)
-    w = next(seq)
-    x = 1
-    y = 26
+def accumulate(div, add_x, add_y, w, z):
+    x = (z % 26) + add_x
+    if div:
+        z //= 26
+
+    if x != w:
+        z *= 26
+        z += w + add_y
+
+    return z
+
+ARGS = [
+    (False, 11,  8),
+    (False, 12,  8),
+    (False, 10, 12),
+    (True,  -8, 10),
+    (False, 15,  2),
+    (False, 15,  8),
+    (True, -11,  4),
+    (False, 10,  9),
+    (True,  -3, 10),
+    (False, 15,  3),
+    (True,  -3,  7),
+    (True,  -1,  7),
+    (True, -10,  2),
+    (True, -16,  2)
+]
+
+from functools import partial
+PROGRAM = [partial(accumulate, *args) for args in ARGS]
+
+def run(seq):
     z = 0
+    for func, w in zip(PROGRAM, seq):
+        z = func(w, z)
+    return z
 
 if __name__ == '__main__':
     from get_aoc import get_input_lines
@@ -69,7 +99,7 @@ if __name__ == '__main__':
 
     print('Part 1:')
     for seq in down_counter(14):
-        r = program.run(seq)
-        if r['z'] == 0:
+        s = run(seq)
+        if not s:
             print(seq)
             break
