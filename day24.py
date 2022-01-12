@@ -86,8 +86,8 @@ ARGS = [
 from functools import partial
 PROGRAM = [partial(accumulate, *args) for args in ARGS]
 
-def find_inputs(args, expected):
-    for w in range(9, 0, -1):
+def find_inputs(args, expected, highest_first=True):
+    for w in range(9, 0, -1) if highest_first else range(1, 10):
         for z in range(expected * 26, (expected + 1) * 26):
             if accumulate(*args, w, z) == expected:
                 yield (w, z)
@@ -100,19 +100,16 @@ def find_inputs(args, expected):
             if accumulate(*args, w, z) == expected:
                 yield (w, z)
 
-def find_serials(step, expected, serial):
-    if step == len(ARGS):
-        print(step, expected, serial)
-
+def find_serials(step, expected, serial, highest_first=True):
     if step > len(ARGS):
         yield serial
         return
 
-    for w, z in find_inputs(ARGS[-step], expected):
-        yield from find_serials(step + 1, z, serial + w * 10 ** (step - 1))
+    for w, z in find_inputs(ARGS[-step], expected, highest_first):
+        yield from find_serials(step + 1, z, serial + w * 10 ** (step - 1), highest_first)
 
-def find_all_serials():
-    yield from find_serials(1, 0, 0)
+def find_all_serials(highest_first=True):
+    yield from find_serials(1, 0, 0, highest_first)
 
 def run(seq):
     z = 0
@@ -121,5 +118,8 @@ def run(seq):
     return z
 
 if __name__ == '__main__':
+    print("Part 2:")
+    print(next(find_all_serials(False)))
+
     print("Part 1:")
     print(next(find_all_serials()))
